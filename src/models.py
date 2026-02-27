@@ -1,6 +1,9 @@
+from sklearn.base import accuracy_score
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from sklearn.preprocessing import StandardScaler 
+from sklearn.metrics import confusion_matrix, f1_score, silhouette_score
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC 
 
 def run_kmeans_baseline(df_encoded):
     """
@@ -18,3 +21,32 @@ def run_kmeans_baseline(df_encoded):
     score = silhouette_score(X_scaled, klasteri)
     
     return score, klasteri, kmeans, scaler, X_cluster
+
+def run_svm_baseline(df_encoded):
+    """
+    Priprema podatke, vrši 70:30 podelu i trenira SVM baseline model.
+    """
+    cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality', 
+                    'Gender', 'Country', 'Alcohol_Consumption', 'Smoking', 'Health_Issues', 'Occupation']
+    
+    X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
+    y = df_encoded['Stress_Level']
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+    
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    svm_model = SVC(kernel='rbf', random_state=42)
+    
+    cv_scores = cross_val_score(svm_model, X_train_scaled, y_train, cv=5, scoring='accuracy')
+    
+    svm_model.fit(X_train_scaled, y_train)
+    y_pred = svm_model.predict(X_test_scaled)
+    
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    cm = confusion_matrix(y_test, y_pred)
+    
+    return svm_model, acc, f1, cm, cv_scores, cv_scores.mean()

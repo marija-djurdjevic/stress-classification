@@ -64,3 +64,15 @@ def plot_kmeans_clusters(df_original, klasteri, kmeans, scaler):
     plt.legend(title='K-Means Klaster')
     plt.tight_layout()
     plt.show()
+
+def plot_confusion_matrix(cm):
+    """Prikazuje matricu konfuzije za model klasifikacije."""
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                xticklabels=['Low', 'Medium', 'High'], 
+                yticklabels=['Low', 'Medium', 'High'])
+    plt.title('Matrica konfuzije - SVM Baseline', fontsize=14)
+    plt.xlabel('Predviđena klasa (Predicted)', fontsize=12)
+    plt.ylabel('Stvarna klasa (Actual)', fontsize=12)
+    plt.tight_layout()
+    plt.show()
