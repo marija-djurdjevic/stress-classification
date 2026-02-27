@@ -5,8 +5,7 @@ from sklearn.preprocessing import StandardScaler
 def run_kmeans_baseline(df_encoded):
     """
     Pokreće K-Means klasterovanje (baseline) koristeći odabrane atribute.
-    Vrši obavezno skaliranje podataka pre klasterovanja.
-    Vraća Silhouette rezultat (mjeru kvaliteta klastera).
+    Vraća Silhouette rezultat, dodeljene klastere, istrenirani model i scaler.
     """
     X_cluster = df_encoded[['Caffeine_mg', 'Sleep_Hours']]
     
@@ -18,4 +17,4 @@ def run_kmeans_baseline(df_encoded):
     
     score = silhouette_score(X_scaled, klasteri)
     
-    return score
+    return score, klasteri, kmeans, scaler, X_cluster

@@ -44,3 +44,23 @@ def plot_correlation_matrix(df_encoded):
     print("\nKorelacija atributa sa nivoom stresa (Stress_Level):")
     stres_korelacija = corr['Stress_Level'].sort_values(ascending=False)
     print(stres_korelacija)
+
+def plot_kmeans_clusters(df_original, klasteri, kmeans, scaler):
+    """Vizuelizacija K-Means klastera sa obeleženim centroidima."""
+    
+    centroidi_original = scaler.inverse_transform(kmeans.cluster_centers_)
+    
+    plt.figure(figsize=(10, 6))
+    
+    sns.scatterplot(data=df_original, x='Caffeine_mg', y='Sleep_Hours', 
+                    hue=klasteri, palette='viridis', alpha=0.7)
+    
+    plt.scatter(centroidi_original[:, 0], centroidi_original[:, 1], 
+                c='red', s=200, marker='X', label='Centroidi klastera', linewidths=3)
+    
+    plt.title('Spontano grupisanje podataka: K-Means Klasteri (k=3)', fontsize=14)
+    plt.xlabel('Kofein (mg)', fontsize=12)
+    plt.ylabel('Sati sna', fontsize=12)
+    plt.legend(title='K-Means Klaster')
+    plt.tight_layout()
+    plt.show()
