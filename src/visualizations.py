@@ -26,12 +26,20 @@ def plot_caffeine_vs_sleep(df):
     plt.show()
 
 def plot_correlation_matrix(df_encoded):
-    """Heatmap korelacije između numeričkih atributa."""
-    plt.figure(figsize=(12, 8))
-    cols = ['Caffeine_mg', 'Sleep_Hours', 'Sleep_Quality', 'Heart_Rate', 
-            'Physical_Activity_Hours', 'Stress_Level']
-    corr = df_encoded[cols].corr()
-    sns.heatmap(corr, annot=True, cmap='RdBu_r', vmin=-1, vmax=1, fmt=".2f")
-    plt.title('Korelaciona matrica ključnih faktora', fontsize=14)
+    """Heatmap korelacije za sve atribute u skupu podataka."""
+    plt.figure(figsize=(14, 10))
+    
+    df_for_corr = df_encoded.drop(columns=['ID'], errors='ignore')
+    corr = df_for_corr.corr()
+    
+    mask = np.triu(np.ones_like(corr, dtype=bool))
+    
+    sns.heatmap(corr, mask=mask, annot=True, cmap='RdBu_r', vmin=-1, vmax=1, fmt=".2f", 
+                annot_kws={"size": 9}, linewidths=.5)
+    plt.title('Korelaciona matrica svih atributa', fontsize=16)
     plt.tight_layout()
     plt.show()
+    
+    print("\nKorelacija atributa sa nivoom stresa (Stress_Level):")
+    stres_korelacija = corr['Stress_Level'].sort_values(ascending=False)
+    print(stres_korelacija)
