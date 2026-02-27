@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 sns.set_theme(style="whitegrid", palette="muted")
 
