@@ -97,7 +97,7 @@ def plot_multicollinearity(df):
     plt.show()
 
 def plot_physiological_impact(df):
-    """Prikazuje uticaj stresa na fiziološke parametre (Puls i BMI) pomoću Boxplot-a."""
+    """Prikazuje uticaj stresa na fiziološke parametre pomoću različitih vizuelizacija."""
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     
     sns.boxplot(data=df, x='Stress_Level', y='Heart_Rate', ax=axes[0], 
@@ -106,11 +106,12 @@ def plot_physiological_impact(df):
     axes[0].set_xlabel('Nivo stresa', fontsize=11)
     axes[0].set_ylabel('Otkucaji srca (bpm)', fontsize=11)
     
-    sns.boxplot(data=df, x='Stress_Level', y='BMI', ax=axes[1], 
-                palette='Blues', order=['Low', 'Medium', 'High'])
-    axes[1].set_title('Povezanost BMI indeksa i nivoa stresa', fontsize=13)
-    axes[1].set_xlabel('Nivo stresa', fontsize=11)
-    axes[1].set_ylabel('BMI Indeks', fontsize=11)
+    sns.kdeplot(data=df, x='BMI', hue='Stress_Level', ax=axes[1], 
+                fill=True, palette='Blues', common_norm=False, alpha=0.5, 
+                linewidth=2, hue_order=['Low', 'Medium', 'High'])
+    axes[1].set_title('Distribucija gustine BMI indeksa po stresu', fontsize=13)
+    axes[1].set_xlabel('BMI Indeks', fontsize=11)
+    axes[1].set_ylabel('Gustina verovatnoće', fontsize=11)
     
     plt.tight_layout()
     plt.show()
