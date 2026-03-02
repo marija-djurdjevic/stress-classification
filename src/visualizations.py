@@ -103,16 +103,16 @@ def plot_physiological_impact(df):
     sns.pointplot(data=df, x='Stress_Level', y='Heart_Rate', ax=axes[0], 
                   color='#e74c3c', order=['Low', 'Medium', 'High'], 
                   capsize=.1, markers="D", linestyles="--")
-    axes[0].set_title('Trend prosečnih otkucaja srca po nivoima stresa', fontsize=13)
+    axes[0].set_title('Trend prosječnih otkucaja srca po nivoima stresa', fontsize=13)
     axes[0].set_xlabel('Nivo stresa', fontsize=11)
-    axes[0].set_ylabel('Prosečni otkucaji srca (bpm)', fontsize=11)
+    axes[0].set_ylabel('Prosječni otkucaji srca (bpm)', fontsize=11)
     
     sns.kdeplot(data=df, x='BMI', hue='Stress_Level', ax=axes[1], 
                 fill=True, palette='Blues', common_norm=False, alpha=0.5, 
                 linewidth=2, hue_order=['Low', 'Medium', 'High'])
     axes[1].set_title('Distribucija gustine BMI indeksa po stresu', fontsize=13)
     axes[1].set_xlabel('BMI Indeks', fontsize=11)
-    axes[1].set_ylabel('Gustina verovatnoće', fontsize=11)
+    axes[1].set_ylabel('Gustina vjerovatnoće', fontsize=11)
     
     plt.tight_layout()
     plt.show()
@@ -122,7 +122,7 @@ def plot_age_distribution(df):
     plt.figure(figsize=(9, 5))
     sns.violinplot(data=df, x='Stress_Level', y='Age', palette='Purples', 
                    order=['Low', 'Medium', 'High'], inner='quartile')
-    plt.title('Distribucija starosti po nivoima stresa (Gustina verovatnoće)', fontsize=14)
+    plt.title('Distribucija starosti po nivoima stresa (Gustina vjerovatnoće)', fontsize=14)
     plt.xlabel('Nivo stresa', fontsize=12)
     plt.ylabel('Starost korisnika (Age)', fontsize=12)
     plt.tight_layout()
