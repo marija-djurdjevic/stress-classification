@@ -76,3 +76,52 @@ def plot_confusion_matrix(cm):
     plt.ylabel('Stvarna klasa (Actual)', fontsize=12)
     plt.tight_layout()
     plt.show()
+
+def plot_multicollinearity(df):
+    """Prikazuje vizuelni dokaz multikolinearnosti između redundantnih atributa."""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    
+    sns.regplot(data=df, x='Coffee_Intake', y='Caffeine_mg', ax=axes[0], 
+                color='#2c3e50', scatter_kws={'alpha':0.4}, line_kws={'color':'#e74c3c'})
+    axes[0].set_title('Savršena kolinearnost (r=1.00): Unos kafe i Kofein', fontsize=13)
+    axes[0].set_xlabel('Broj šoljica kafe (Coffee_Intake)', fontsize=11)
+    axes[0].set_ylabel('Kofein u mg (Caffeine_mg)', fontsize=11)
+    
+    sns.boxplot(data=df, x='Sleep_Quality', y='Sleep_Hours', ax=axes[1], 
+                palette='Set2', order=['Poor', 'Fair', 'Good', 'Excellent'])
+    axes[1].set_title('Visoka korelacija (r=0.93): Kvalitet i Dužina sna', fontsize=13)
+    axes[1].set_xlabel('Kvalitet sna (Sleep_Quality)', fontsize=11)
+    axes[1].set_ylabel('Sati sna (Sleep_Hours)', fontsize=11)
+    
+    plt.tight_layout()
+    plt.show()
+
+def plot_physiological_impact(df):
+    """Prikazuje uticaj stresa na fiziološke parametre (Puls i BMI) pomoću Boxplot-a."""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    
+    sns.boxplot(data=df, x='Stress_Level', y='Heart_Rate_bpm', ax=axes[0], 
+                palette='Reds', order=['Low', 'Medium', 'High'])
+    axes[0].set_title('Distribucija otkucaja srca po nivoima stresa', fontsize=13)
+    axes[0].set_xlabel('Nivo stresa', fontsize=11)
+    axes[0].set_ylabel('Otkucaji srca (bpm)', fontsize=11)
+    
+    sns.boxplot(data=df, x='Stress_Level', y='BMI', ax=axes[1], 
+                palette='Blues', order=['Low', 'Medium', 'High'])
+    axes[1].set_title('Povezanost BMI indeksa i nivoa stresa', fontsize=13)
+    axes[1].set_xlabel('Nivo stresa', fontsize=11)
+    axes[1].set_ylabel('BMI Indeks', fontsize=11)
+    
+    plt.tight_layout()
+    plt.show()
+
+def plot_age_distribution(df):
+    """Prikazuje distribuciju starosti pacijenata u odnosu na stres pomoću Violin plota."""
+    plt.figure(figsize=(9, 5))
+    sns.violinplot(data=df, x='Stress_Level', y='Age', palette='Purples', 
+                   order=['Low', 'Medium', 'High'], inner='quartile')
+    plt.title('Distribucija starosti po nivoima stresa (Gustina verovatnoće)', fontsize=14)
+    plt.xlabel('Nivo stresa', fontsize=12)
+    plt.ylabel('Starost korisnika (Age)', fontsize=12)
+    plt.tight_layout()
+    plt.show()
