@@ -100,11 +100,12 @@ def plot_physiological_impact(df):
     """Prikazuje uticaj stresa na fiziološke parametre pomoću različitih vizuelizacija."""
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     
-    sns.boxplot(data=df, x='Stress_Level', y='Heart_Rate', ax=axes[0], 
-                palette='Reds', order=['Low', 'Medium', 'High'])
-    axes[0].set_title('Distribucija otkucaja srca po nivoima stresa', fontsize=13)
+    sns.pointplot(data=df, x='Stress_Level', y='Heart_Rate', ax=axes[0], 
+                  color='#e74c3c', order=['Low', 'Medium', 'High'], 
+                  capsize=.1, markers="D", linestyles="--")
+    axes[0].set_title('Trend prosečnih otkucaja srca po nivoima stresa', fontsize=13)
     axes[0].set_xlabel('Nivo stresa', fontsize=11)
-    axes[0].set_ylabel('Otkucaji srca (bpm)', fontsize=11)
+    axes[0].set_ylabel('Prosečni otkucaji srca (bpm)', fontsize=11)
     
     sns.kdeplot(data=df, x='BMI', hue='Stress_Level', ax=axes[1], 
                 fill=True, palette='Blues', common_norm=False, alpha=0.5, 
