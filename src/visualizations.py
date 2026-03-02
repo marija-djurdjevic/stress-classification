@@ -100,7 +100,7 @@ def plot_physiological_impact(df):
     """Prikazuje uticaj stresa na fiziološke parametre (Puls i BMI) pomoću Boxplot-a."""
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     
-    sns.boxplot(data=df, x='Stress_Level', y='Heart_Rate_bpm', ax=axes[0], 
+    sns.boxplot(data=df, x='Stress_Level', y='Heart_Rate', ax=axes[0], 
                 palette='Reds', order=['Low', 'Medium', 'High'])
     axes[0].set_title('Distribucija otkucaja srca po nivoima stresa', fontsize=13)
     axes[0].set_xlabel('Nivo stresa', fontsize=11)
