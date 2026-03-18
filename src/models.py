@@ -23,10 +23,12 @@ def run_kmeans_baseline(df_encoded):
 
 def run_svm_baseline(df_encoded):
     """
-    Priprema podatke, vrši 70:30 podelu i trenira SVM baseline model.
+    Priprema podatke, vrši 70:30 podelu i trenira SVM model.
+    Izbačen je 'Sleep_Hours' radi sprečavanja curenja podataka, 
+    dok su zadržane kolone o životnim navikama i zdravlju.
     """
     cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality', 
-                    'Gender', 'Country', 'Alcohol_Consumption', 'Smoking', 'Health_Issues', 'Occupation']
+                    'Sleep_Hours', 'Gender', 'Country']
     
     X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
     y = df_encoded['Stress_Level']
