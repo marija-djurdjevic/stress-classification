@@ -21,14 +21,14 @@ def run_kmeans_baseline(df_encoded):
     
     return score, klasteri, kmeans, scaler, X_cluster
 
-def run_svm_baseline(df_encoded):
+def run_svm_baseline_extreme(df_encoded):
     """
-    Priprema podatke, vrši 70:30 podelu i trenira SVM model.
-    Izbačen je 'Sleep_Hours' radi sprečavanja curenja podataka, 
-    dok su zadržane kolone o životnim navikama i zdravlju.
+    Ekstremni eksperiment: Izbacujemo sve atribute za koje smo 
+    dokazale da se koriste za generisanje sintetičkih labela.
     """
     cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality', 
-                    'Sleep_Hours', 'Gender', 'Country']
+                    'Sleep_Hours', 'Gender', 'Country',
+                    'Age', 'BMI', 'Health_Issues']
     
     X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
     y = df_encoded['Stress_Level']
@@ -51,3 +51,9 @@ def run_svm_baseline(df_encoded):
     cm = confusion_matrix(y_test, y_pred)
     
     return svm_model, acc, f1, cm, cv_scores, cv_scores.mean()
+
+svm_model, acc, f1, cm, cv_scores, cv_mean = run_svm_baseline_extreme(df_encoded)
+
+print("--- Rezultati Ekstremnog SVM Modela ---")
+print(f"Prosječna CV tačnost (Trening): {cv_mean:.4f}")
+print(f"Tačnost na test skupu (Accuracy): {acc:.4f}")
