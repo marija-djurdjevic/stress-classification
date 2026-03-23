@@ -96,3 +96,52 @@ pipeline_model, acc, f1, cm, cv_scores, cv_mean = run_svm_robust_pipeline(df_enc
 print("--- Rezultati Robusnog Pipeline Modela ---")
 print(f"Prosječna CV tačnost (Trening): {cv_mean:.4f}")
 print(f"Tačnost na test skupu (Accuracy): {acc:.4f}")
+
+def run_svm_baseline(df_encoded):
+    """
+    Priprema podatke, vrši 70:30 podelu i trenira SVM baseline model.
+    """
+    cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality', 
+                    'Gender', 'Country', 'Alcohol_Consumption', 'Smoking', 'Health_Issues', 'Occupation']
+    
+    X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
+    y = df_encoded['Stress_Level']
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+    
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    svm_model = SVC(kernel='rbf', random_state=42)
+    
+    cv_scores = cross_val_score(svm_model, X_train_scaled, y_train, cv=5, scoring='accuracy')
+    
+    svm_model.fit(X_train_scaled, y_train)
+    y_pred = svm_model.predict(X_test_scaled)
+    
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    cm = confusion_matrix(y_test, y_pred)
+    
+    return svm_model, acc, f1, cm, cv_scores, cv_scores.mean()
+
+def run_svm_smote_pipeline(df_encoded):
+    """Robusni SVM za realistične, pokvarene podatke (KT2)"""
+    cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality']
+    X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
+    y = df_encoded['Stress_Level']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+    pipeline = ImbPipeline([
+        ('imputer', KNNImputer(n_neighbors=5)),  
+        ('smote', SMOTE(random_state=42)),       
+        ('scaler', StandardScaler()),            
+        ('svm', SVC(kernel='rbf', random_state=42)) 
+    ])
+    cv_scores = cross_val_score(pipeline, X_train, y_train, cv=5, scoring='accuracy')
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    cm = confusion_matrix(y_test, y_pred)
+    return pipeline, acc, f1, cm, cv_scores, cv_scores.mean()
