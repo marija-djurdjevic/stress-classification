@@ -7,6 +7,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import KNNImputer
 from imblearn.pipeline import Pipeline as ImbPipeline
 from imblearn.over_sampling import SMOTE
+from sklearn.ensemble import RandomForestClassifier
 
 def run_kmeans_baseline(df_encoded):
     """
@@ -137,3 +138,29 @@ def run_svm_smote_pipeline(df_encoded):
     f1 = f1_score(y_test, y_pred, average='weighted')
     cm = confusion_matrix(y_test, y_pred)
     return pipeline, acc, f1, cm, cv_scores, cv_scores.mean()
+
+def run_rf_smote_pipeline(df_encoded):
+    
+    cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality']
+    X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
+    y = df_encoded['Stress_Level']
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+    
+    pipeline = ImbPipeline([
+        ('imputer', KNNImputer(n_neighbors=5)),  
+        ('smote', SMOTE(random_state=42)),       
+        ('scaler', StandardScaler()),            
+        ('rf', RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10)) 
+    ])
+    
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    
+    rf_model = pipeline.named_steps['rf']
+    importances = rf_model.feature_importances_
+    
+    return acc, f1, importances, X.columns
