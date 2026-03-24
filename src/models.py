@@ -5,6 +5,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC 
 from sklearn.pipeline import Pipeline
 from sklearn.impute import KNNImputer
+from imblearn.pipeline import Pipeline as ImbPipeline
+from imblearn.over_sampling import SMOTE
 
 def run_kmeans_baseline(df_encoded):
     """
