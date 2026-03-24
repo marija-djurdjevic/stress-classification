@@ -164,3 +164,46 @@ def run_rf_smote_pipeline(df_encoded):
     importances = rf_model.feature_importances_
     
     return acc, f1, importances, X.columns
+
+def run_xgboost_smote_pipeline(df_encoded):
+    from xgboost import XGBClassifier
+    from imblearn.pipeline import Pipeline as ImbPipeline
+    from imblearn.over_sampling import SMOTE
+    from sklearn.impute import KNNImputer
+    from sklearn.preprocessing import StandardScaler, LabelEncoder
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import accuracy_score, f1_score
+
+    cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality']
+    X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
+    y = df_encoded['Stress_Level']
+    
+    le = LabelEncoder()
+    y_numeric = le.fit_transform(y)
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y_numeric, test_size=0.3, random_state=42, stratify=y_numeric)
+    
+    pipeline = ImbPipeline([
+        ('imputer', KNNImputer(n_neighbors=5)),  
+        ('smote', SMOTE(random_state=42)),       
+        ('scaler', StandardScaler()),            
+        ('xgb', XGBClassifier(
+            n_estimators=100, 
+            random_state=42, 
+            eval_metric='mlogloss',
+            max_depth=3,             
+            learning_rate=0.05,      
+            subsample=0.8,           
+            colsample_bytree=0.8,    
+            gamma=2,                 
+            reg_lambda=10            
+        )) 
+    ])
+    
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+    
+    acc = accuracy_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average='weighted')
+    
+    return acc, f1
