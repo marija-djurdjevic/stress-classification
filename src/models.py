@@ -54,11 +54,6 @@ def run_svm_baseline_extreme(df_encoded):
     
     return svm_model, acc, f1, cm, cv_scores, cv_scores.mean()
 
-svm_model, acc, f1, cm, cv_scores, cv_mean = run_svm_baseline_extreme(df_encoded)
-
-print("--- Rezultati Ekstremnog SVM Modela ---")
-print(f"Prosječna CV tačnost (Trening): {cv_mean:.4f}")
-print(f"Tačnost na test skupu (Accuracy): {acc:.4f}")
 
 
 def run_svm_robust_pipeline(df_encoded):
@@ -91,11 +86,6 @@ def run_svm_robust_pipeline(df_encoded):
     
     return pipeline, acc, f1, cm, cv_scores, cv_scores.mean()
 
-pipeline_model, acc, f1, cm, cv_scores, cv_mean = run_svm_robust_pipeline(df_encoded)
-
-print("--- Rezultati Robusnog Pipeline Modela ---")
-print(f"Prosječna CV tačnost (Trening): {cv_mean:.4f}")
-print(f"Tačnost na test skupu (Accuracy): {acc:.4f}")
 
 def run_svm_baseline(df_encoded):
     """
