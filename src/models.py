@@ -224,57 +224,43 @@ def run_xgboost_smote_pipeline(df_encoded):
 
 
 def run_mlp_smote_pipeline(df_encoded):
-    """
-    MLP pipeline sa imputacijom, SMOTE balansiranjem i proširenim
-    GridSearch podešavanjem hiperparametara.
-    """
+    from sklearn.neural_network import MLPClassifier
+    from imblearn.pipeline import Pipeline as ImbPipeline
+    from imblearn.over_sampling import SMOTE
+    from sklearn.impute import KNNImputer
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.model_selection import train_test_split, GridSearchCV
+    from sklearn.metrics import accuracy_score, f1_score
+
     cols_to_drop = ['ID', 'Stress_Level', 'Coffee_Intake', 'Sleep_Quality']
     X = df_encoded.drop(columns=[col for col in cols_to_drop if col in df_encoded.columns], errors='ignore')
     y = df_encoded['Stress_Level']
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=42, stratify=y
-    )
-
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+    
     pipeline = ImbPipeline([
-        ('imputer', KNNImputer(n_neighbors=5)),
-        ('smote', SMOTE(random_state=42)),
-        ('scaler', StandardScaler()),
-        ('mlp', MLPClassifier(max_iter=2000, random_state=42))
+        ('imputer', KNNImputer(n_neighbors=5)),  
+        ('smote', SMOTE(random_state=42)),       
+        ('scaler', StandardScaler()),            
+        ('mlp', MLPClassifier(max_iter=1000, random_state=42, early_stopping=True))
     ])
-
+    
     param_grid = {
-        'mlp__hidden_layer_sizes': [(50,), (100,), (100, 50), (128, 64), (150, 100, 50)],
-        'mlp__activation': ['relu', 'tanh'],
-        'mlp__alpha': [0.0001, 0.001, 0.01, 0.05, 0.1],
-        'mlp__learning_rate_init': [0.0005, 0.001, 0.005],
-        'mlp__batch_size': [32, 64, 128],
-        'mlp__early_stopping': [True],
-        'mlp__validation_fraction': [0.1, 0.15]
+        'mlp__hidden_layer_sizes': [(100,), (100, 50), (50, 50, 50)],
+        'mlp__activation': ['tanh', 'relu'],
+        'mlp__alpha': [0.0001, 0.05],
+        'mlp__learning_rate_init': [0.001, 0.01]
     }
-
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-
-    grid = GridSearchCV(
-        pipeline,
-        param_grid=param_grid,
-        cv=cv,
-        scoring='f1_weighted',
-        n_jobs=-1
-    )
-
+    
+    grid = GridSearchCV(pipeline, param_grid, cv=3, scoring='accuracy', n_jobs=-1)
     grid.fit(X_train, y_train)
-
+    
     best_model = grid.best_estimator_
     y_pred = best_model.predict(X_test)
-
+    
     acc = accuracy_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred, average='weighted')
-    cm = confusion_matrix(y_test, y_pred)
-
-    cv_scores = cross_val_score(best_model, X_train, y_train, cv=cv, scoring='f1_weighted')
-    cv_mean = cv_scores.mean()
-
+    
     print(f"Najbolji parametri: {grid.best_params_}")
-
-    return best_model, acc, f1, cm, cv_scores, cv_mean
+    
+    return acc, f1
